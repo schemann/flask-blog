@@ -25,6 +25,16 @@ def save_posts(posts):
         json.dump(posts, file, indent=4)
 
 
+def fetch_post_by_id(post_id, posts=None):
+    """Return the post with this id from posts (default: the storage file), or None."""
+    if posts is None:
+        posts = load_posts()
+    for post in posts:
+        if post["id"] == post_id:
+            return post
+    return None
+
+
 def next_post_id(posts):
     """Return a new unique id: one higher than the highest id in use."""
     return max((post["id"] for post in posts), default=0) + 1
@@ -71,6 +81,29 @@ def delete(post_id):
         return "Post not found", 404
     save_posts(remaining)
     return redirect(url_for('index'))
+
+
+@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
+def update(post_id):
+    """Show the update form for a post; on POST save the changes and go back home."""
+    blog_posts = load_posts()
+    post = fetch_post_by_id(post_id, blog_posts)
+    if post is None:
+        return "Post not found", 404
+
+    if request.method == 'POST':
+        author = request.form.get('author', '').strip()
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        if not (author and title and content):
+            error = "Please fill in author, title and content."
+            changed = dict(post, author=author, title=title, content=content)
+            return render_template('update.html', post=changed, error=error), 400
+        post.update(author=author, title=title, content=content)
+        save_posts(blog_posts)
+        return redirect(url_for('index'))
+
+    return render_template('update.html', post=post)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

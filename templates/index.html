@@ -15,6 +15,7 @@
         <p><em>Written by {{ post.author }}</em></p>
         <p>{{ post.content }}</p>
         <p class="actions">
+            <a class="button" href="{{ url_for('update', post_id=post.id) }}">Update</a>
             <a class="button button-danger" href="{{ url_for('delete', post_id=post.id) }}"
                onclick="return confirm('Delete this post?');">Delete</a>
         </p>
