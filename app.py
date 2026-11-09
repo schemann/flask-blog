@@ -64,6 +64,7 @@ def add():
             "author": author,
             "title": title,
             "content": content,
+            "likes": 0,
         })
         save_posts(blog_posts)
         return redirect(url_for('index'))
@@ -104,6 +105,18 @@ def update(post_id):
         return redirect(url_for('index'))
 
     return render_template('update.html', post=post)
+
+
+@app.route('/like/<int:post_id>')
+def like(post_id):
+    """Add one like to the post with this id and go back to the home page."""
+    blog_posts = load_posts()
+    post = fetch_post_by_id(post_id, blog_posts)
+    if post is None:
+        return "Post not found", 404
+    post["likes"] = post.get("likes", 0) + 1
+    save_posts(blog_posts)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

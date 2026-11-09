@@ -88,3 +88,11 @@ h1 {
 .button-danger:hover {
     background-color: #8A0019;
 }
+
+.button-like {
+    background-color: #C2185B;
+}
+
+.button-like:hover {
+    background-color: #9C1349;
+}
